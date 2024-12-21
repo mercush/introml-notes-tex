@@ -4,6 +4,7 @@ project:
 book:
   title: Intro to Machine Learning Notes
   repo-url: https://github.com/390introml/notes
+  repo-branch: html
   repo-actions: [edit, issue]
   repo-subdir: /
   site-url: https://introml.mit.edu/notes
