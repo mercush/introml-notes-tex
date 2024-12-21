@@ -1,0 +1,256 @@
+# Introduction {#chap-intro}
+
+The main focus of *machine learning* (ML)^[Machine Learning] is *making decisions or predictions based on data*. There are a number of other fields with significant overlap in technique, but differences in focus.
+
+:::{.column-margin}
+This description is paraphrased from a post on 9/4/12 at [andrewgelman.com](https://andrewgelman.com).
+:::
+
+In economics and psychology, the goal is to discover underlying causal processes. In statistics, it is to find a model that fits a dataset well. In those fields, the end product is a model. In machine learning, we often fit models as a means to the end of making good predictions or decisions.
+
+As ML methods have improved in their capability and scope, ML has become arguably the best way—measured in terms of speed, human engineering time, and robustness—to approach many applications. Great examples include face detection, speech recognition, and many kinds of language-processing tasks. Almost any application that involves understanding data or signals from the real world can be nicely addressed using machine learning.
+
+One crucial aspect of machine learning approaches to solving problems is that human engineering plays an important role. A human still has to *frame* the problem: acquire and organize data, design a space of possible solutions, select a learning algorithm and its parameters, apply the algorithm to the data, validate the resulting solution, and assess its impact on people affected by its deployment.
+
+:::{.column-margin}
+This aspect is often undervalued.
+:::
+
+### The Conceptual Basis of Learning from Data
+
+The conceptual basis of learning from data is the *problem of induction*: Why do we think previously seen data will help us predict the future? This is a longstanding philosophical problem. We operationalize it by making assumptions, such as:
+
+- All training data are so-called i.i.d. (independent and identically distributed).
+
+:::{.column-margin}
+This means that the elements in the set are related in the sense that they all come from the same underlying probability distribution, but not in other ways.
+:::
+
+- Queries will be drawn from the same distribution as the training data.
+- The answer comes from a set of possible answers known in advance.
+
+In general, we need to solve these two problems:
+
+1. **Estimation:** When we have data that are noisy reflections of some underlying quantity of interest, we aggregate the data and make estimates or predictions about the quantity.
+
+:::{.column-margin}
+For example, the same treatment may end up with different results on different trials. How can we predict how well an estimate compares to future results?
+:::
+
+2. **Generalization:** How can we predict results of a situation or experiment that we have never encountered before in our dataset?
+
+
+
+### Problem Classes in Machine Learning
+
+We can describe problems and their solutions using six characteristics, three of which characterize the problem and three of which characterize the solution:
+
+1. **Problem class:** What is the nature of the training data, and what kinds of queries will be made at testing time?
+2. **Assumptions:** What do we know about the source of the data or the form of the solution?
+3. **Evaluation criteria:** What is the goal of the prediction or estimation system? How will the answers to individual queries be evaluated? How will the overall performance of the system be measured?
+4. **Model type:** Will an intermediate model of the world be made? What aspects of the data will be modeled in different variables/parameters? How will the model be used to make predictions?
+5. **Model class:** What particular class of models will be used? What criterion will we use to pick a particular model from the model class?
+6. **Algorithm:** What computational process will be used to fit the model to the data and/or to make predictions?
+
+:::{.column-margin}
+Don't feel you have to memorize all these kinds of learning, etc. We just want you to have a very high-level view of (part of) the breadth of the field.
+:::
+
+
+
+### Supervised Learning
+
+The idea of *supervised learning* is that the learning system is given inputs and told which specific outputs should be associated with them. We divide supervised learning into:
+
+1. **Regression:** Outputs are real numbers.
+2. **Classification:** Outputs belong to a finite set.
+
+#### Regression
+
+For a regression problem, the training data are in the form of a set of $n$ pairs:
+
+$$
+\mathcal{D}_{\text{train}} = \{(x^{(1)}, y^{(1)}), \ldots, (x^{(n)}, y^{(n)})\}
+$$
+
+where $x^{(i)}$ represents an input, typically a $d$-dimensional vector of real and/or discrete values, and $y^{(i)}$ is the output to be predicted, a real number.
+
+:::{.column-margin}
+Many textbooks use $x_i$ and $t_i$ instead of $x^{(i)}$ and $y^{(i)}$. We find that notation somewhat difficult to manage when $x^{(i)}$ is itself a vector and we need to talk about its elements. The notation we are using is standard in some other parts of the ML literature.
+:::
+
+The goal in a regression problem is, given a new input value $x^{(n+1)}$, to predict the value of $y^{(n+1)}$.
+
+Regression problems are a kind of *supervised learning*, because the desired output $y^{(i)}$ is specified for each of the training examples $x^{(i)}$.
+
+#### Classification
+
+A classification problem is like regression, except that the values that $y^{(i)}$ can take do not have an order. 
+
+The classification problem is **binary** or **two-class** if $y^{(i)}$ (also known as the *class*) is drawn from a set of two possible values; otherwise, it is called **multi-class**.
+
+
+
+### Unsupervised Learning
+
+*Unsupervised learning* doesn't involve learning a function from inputs to outputs based on a set of input-output pairs. Instead, one is given a dataset and generally expected to find some patterns or structure inherent in it.
+
+#### Clustering
+
+Given samples $x^{(1)}, \ldots, x^{(n)} \in \mathbb{R}^d$, the goal is to find a partitioning (or *clustering*) of the samples that groups together similar samples.
+
+#### Dimensionality Reduction
+
+Given samples $x^{(1)}, \ldots, x^{(n)} \in \mathbb{R}^D$, the problem is to re-represent them as points in a $d$-dimensional space, where $d < D$.
+
+
+
+### Reinforcement Learning
+
+In reinforcement learning, the goal is to learn a mapping from input values (e.g., states of an agent or system) to output values (e.g., control actions). The learning problem is framed as an agent interacting with an environment:
+
+1. The agent observes the current state $s_t$.
+2. It selects an action $a_t$.
+3. It receives a reward $r_t$, which depends on $s_t$ and possibly $a_t$.
+4. The environment transitions probabilistically to a new state $s_{t+1}$.
+
+The goal is to find a policy $\pi$, mapping $s$ to $a$, such that some long-term sum or average of rewards $r$ is maximized.
+
+### Other Settings
+
+There are many other problem settings. Here are a few:
+
+#### Semi-Supervised Learning
+
+In *semi-supervised* learning, we have a supervised-learning training set, but there may be an additional set of $x^{(i)}$ values with no known $y^{(i)}$. These values can still be used to improve learning performance (if they are drawn from $\Pr(X)$, which is the marginal of $\Pr(X, Y)$ that governs the rest of the dataset).
+
+#### Active Learning
+
+In *active learning*, it is assumed to be expensive to acquire a label $y^{(i)}$ (e.g., asking a human to read an X-ray image). The learning algorithm can sequentially ask for particular inputs $x^{(i)}$ to be labeled and must carefully select queries to learn as effectively as possible while minimizing the cost of labeling.
+
+#### Transfer Learning
+
+In *transfer learning* (also called *meta-learning*), there are multiple tasks with data drawn from different, but related, distributions. The goal is for experience with previous tasks to apply to learning a current task, reducing the required experience with the new task.
+
+
+
+### Assumptions
+
+The kinds of assumptions that we can make about the data source or the solution include:
+
+- The data are independent and identically distributed (i.i.d.).
+- The data are generated by a Markov chain (i.e., outputs depend only on the current *state*, with no additional *memory*).
+- The process generating the data might be adversarial.
+- The "true" model generating the data can be perfectly described by one of some particular set of hypotheses.
+
+The effect of an assumption is often to reduce the *size* or *expressiveness* of the space of possible hypotheses and therefore reduce the amount of data required to reliably identify an appropriate hypothesis.
+
+
+
+### Evaluation Criteria {#sec-evaluation}
+
+Once we have specified a problem class, we need to determine what makes an output or the answer to a query *good*, given the training data. We specify evaluation criteria at two levels:
+
+1. How an individual prediction is scored.
+2. How the overall behavior of the prediction or estimation system is scored.
+
+The quality of predictions from a learned model is often expressed in terms of a *loss function*. A loss function $\mathcal{L}(g, a)$ tells you how much you will be penalized for making a guess $g$ when the answer is actually $a$. Common loss functions include:
+
+#### Examples of Loss Functions
+
+- **0-1 Loss:**
+
+$$
+\mathcal{L}(g, a) = 
+\begin{cases}
+0 & \text{if } g = a, \\
+1 & \text{otherwise.}
+\end{cases}
+$$
+
+- **Squared Loss:**
+
+$$
+\mathcal{L}(g, a) = (g - a)^2
+$$
+
+- **Absolute Loss:**
+
+$$
+\mathcal{L}(g, a) = |g - a|
+$$
+
+- **Asymmetric Loss:**
+  In situations like predicting a heart attack, it might be much worse to predict "no" when the answer is "yes" than the other way around:
+
+$$
+\mathcal{L}(g, a) = 
+\begin{cases}
+1 & \text{if } g = 1 \text{ and } a = 0, \\
+10 & \text{if } g = 0 \text{ and } a = 1, \\
+0 & \text{otherwise.}
+\end{cases}
+$$
+
+#### Other Evaluation Criteria
+
+- Minimizing expected loss over all predictions (also known as *risk*).
+- Minimizing maximum loss: the loss of the worst prediction.
+- Minimizing or bounding regret: how much worse this predictor performs than the best one drawn from some class.
+- Characterizing asymptotic behavior: how well the predictor performs in the limit of infinite training data.
+- Finding algorithms that are probably approximately correct: they probably generate a hypothesis that is right most of the time.
+
+:::{.column-margin}
+In ML literature, expected loss is sometimes called *risk*, but this term can mean other things in fields like economics, so use it carefully.
+:::
+
+
+
+### Model Type
+
+The goal of a machine learning system is typically to estimate or generalize, based on provided data. Below, we examine the role of model-making in machine learning.
+
+#### Non-Parametric Models
+
+In some simple cases, we can generate predictions directly from the training data, without constructing any intermediate model (or learning any parameters). For example, in regression or classification, we might generate an answer to a new query by averaging answers to recent queries, as in the *nearest neighbor* method.
+
+#### Parametric Models
+
+A more common two-step process is:
+
+1. "Fit" a model (with some prior chosen parameterization) to the training data.
+2. Use the model directly to make predictions.
+
+In parametric models for regression or classification, the model is a hypothesis or prediction rule:
+
+$$
+y = h(x; \Theta)
+$$
+
+where $\Theta$ is a set of one or more parameter values determined by fitting the model to the training data and held fixed during testing.
+
+
+
+### Model Class and Parameter Fitting {#modelClass}
+
+A *model class* $\mathcal{M}$ is a set of possible models, typically parameterized by a vector of parameters $\Theta$. What assumptions will we make about the form of the model? 
+
+For regression problems, we might consider a linear function:
+
+$$
+h(x; \theta, \theta_0) = \theta^T x + \theta_0
+$$
+
+where $\Theta = (\theta, \theta_0)$.
+
+#### Model Selection
+
+In some cases, the ML practitioner knows an appropriate model class and specifies it directly. In others, several model classes are considered, and the best is chosen based on some objective function. This is called *model selection*. Model selection picks a model class $\mathcal{M}$ from a (usually finite) set of possible classes, whereas *model fitting* picks a particular model in that class, specified by (usually continuous) parameters $\Theta$.
+
+
+
+### Algorithm
+
+Once we have described a class of models and a way of scoring a model given data, we face the algorithmic problem: what sequence of computational instructions should we run to find a good model from our class? 
+
+Some algorithms are designed generically to perform optimization, while others are specialized for specific ML problems or hypothesis classes.
