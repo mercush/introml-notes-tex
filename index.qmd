@@ -1,6 +1,6 @@
 # Introduction {#chap-intro}
 
-The main focus of *machine learning* (ML)^[Machine Learning] is *making decisions or predictions based on data*. There are a number of other fields with significant overlap in technique, but differences in focus.
+The main focus of *machine learning* (ML) is *making decisions or predictions based on data*. There are a number of other fields with significant overlap in technique, but differences in focus.
 
 :::{.column-margin}
 This description is paraphrased from a post on 9/4/12 at [andrewgelman.com](https://andrewgelman.com).
