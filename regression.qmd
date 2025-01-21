@@ -1,0 +1,211 @@
+# Regression {#chap-regression}
+
+::: {.column-margin}
+"Regression," in common parlance, means moving backwards. But this is forward progress!
+:::
+
+Regression is an important machine learning problem that provides a good starting point for diving deeply into the field.
+
+## Problem Formulation
+
+A *hypothesis* $h$ is employed as a model for solving the regression problem, in that it maps inputs $x$ to outputs $y$:
+
+$$
+x \rightarrow \boxed{h} \rightarrow y \;\;,
+$$
+
+where $x \in \mathbb{R}^d$ (i.e., a length $d$ column vector of real numbers) and $y \in \mathbb{R}$ (i.e., a real number).
+
+Real life rarely gives us vectors of real numbers. The $x$ we really want to take as input is usually something like a song, image, or person. In that case, we'll have to define a function $\varphi(x)$ whose range is $\mathbb{R}^d$, where $\varphi$ represents *features* of $x$ (e.g., a person's height or the amount of bass in a song). Then $h$ maps $\varphi(x)$ to $\mathbb{R}$. 
+
+In much of the following, we'll omit explicit mention of $\varphi$ and assume that the $x^{(i)}$ are in $\mathbb{R}^d$. However, you should always remember that some additional process was almost surely required to go from the actual input examples to their feature representation. We will discuss features more later in the course.
+
+Regression is a *supervised learning* problem, in which we are given a training dataset of the form:
+
+$$
+\mathcal{D}_n = \left\{\left(x^{(1)}, y^{(1)}\right), \dots, \left(x^{(n)}, y^{(n)}\right)\right\}\;\;,
+$$
+
+which provides examples of input values $x^{(i)}$ and the output values $y^{(i)}$ that should be associated with them.
+
+Because $y$ values are real-valued, our hypotheses will have the form:
+
+$$
+h: \mathbb{R}^d \rightarrow \mathbb{R} \;\;.
+$$
+
+This is a good framework when we want to predict a numerical quantity, like height, stock value, etc., rather than dividing the inputs into discrete categories.
+
+What makes a hypothesis useful? That it works well on *new* data—that is, it makes good predictions on examples it hasn't seen.
+
+::: {.column-margin}
+My favorite analogy is to problem sets. We evaluate a student's ability to *generalize* by putting questions on the exam that were not on the homework (training set).
+:::
+
+However, we don't know exactly what data this hypothesis might be tested on in the real world. So, we must *assume* a connection between the training data and testing data. Typically, the assumption is that they are drawn independently from the same probability distribution.
+
+To make this discussion more concrete, we need a *loss function* to express how unhappy we are when we guess an output $g$ given an input $x$ for which the desired output was $a$.
+
+Given a training set $\mathcal{D}_n$ and a hypothesis $h$ with parameters $\Theta$, the *training error* of $h$ can be defined as the average loss on the training data:
+
+$$
+\mathcal{E}_n(h; \Theta) = \frac{1}{n}\sum_{i=1}^n \mathcal{L}(h(x^{(i)}; \Theta), y^{(i)})\;\;.
+$$
+
+The training error of $h$ gives us some idea of how well it characterizes the relationship between $x$ and $y$ values in our data, but it isn't the quantity we *most* care about. What we most care about is *test error*:
+
+$$
+\mathcal{E}(h) = \frac{1}{n'}\sum_{i=n+1}^{n+n'} \mathcal{L}(h(x^{(i)}), y^{(i)})\;\;,
+$$
+
+on $n'$ new examples that were not used in the process of finding the hypothesis.
+
+::: {.column-margin}
+It might be worthwhile to stare at the two errors and think about what's the difference. For example, notice how $\Theta$ is no longer a variable in the testing error? This is because, in evaluating the testing error, the parameters will have been "picked" or "fixed" already.
+:::
+
+For now, we will try to find a hypothesis with small training error (later, with some added criteria) and make design choices so that it *generalizes well* to new data, meaning it also has a small *test error*.
+
+## Regression as an Optimization Problem {#sec-reg_optim}
+
+Given data, a loss function, and a hypothesis class, we need a method for finding a good hypothesis in the class. One of the most general ways to approach this is by framing the machine learning problem as an optimization problem.
+
+We begin by writing down an *objective function* $J(\Theta)$, where $\Theta$ represents *all* the parameters in our model (i.e., all possible parameter choices).
+
+::: {.column-margin}
+Don't be too perturbed by the semicolon where you expected to see a comma! It's a mathematical way of saying that we are mostly interested in this as a function of the arguments before the `;`, but we should remember there's a dependence on the stuff after it as well.
+:::
+
+The objective function describes how we feel about possible hypotheses $\Theta$. We generally look for parameter values $\Theta$ that minimize the objective function:
+
+$$
+\Theta^* = \mathrm{argmin}_{\Theta} J(\Theta)\;\;.
+$$
+
+A very common form for a machine-learning objective is:
+
+$$
+J(\Theta) = \left(\frac{1}{n} \sum_{i=1}^n
+\underbrace{\mathcal{L}(h(x^{(i)}; \Theta), y^{(i)})}_{\text{loss}}\right)
++ \underbrace{\lambda}_{\text{non-negative constant}} R(\Theta)\;\;.
+$$
+
+The *loss* measures how unhappy we are about the prediction $h(x^{(i)}; \Theta)$ for the pair $(x^{(i)}, y^{(i)})$. Minimizing this loss improves prediction accuracy. The *regularizer* $R(\Theta)$ is an additional term that encourages the prediction to remain general, and the constant $\lambda$ adjusts the balance between fitting the training examples and generalizing to unseen examples. We will discuss this balance and the idea of regularization further in Section [Regularization](#sec-regularization).
+
+## Linear Regression
+
+To make this discussion more concrete, we need to provide a hypothesis class and a loss function.
+
+We begin by picking a class of hypotheses $\mathcal{H}$ that might provide a good set of possible models for the relationship between $x$ and $y$ in our data. We start with a very simple class of *linear* hypotheses for regression:
+
+$$
+h(x; \theta, \theta_0) = \theta^T x + \theta_0 \;\;,
+$$
+
+where the model parameters are $\Theta = (\theta, \theta_0)$. In one dimension ($d = 1$), this corresponds to the familiar slope-intercept form $y = mx + b$. In higher dimensions, this model describes *hyperplanes*.
+
+We define a *loss function* to evaluate the quality of predictions compared to the "target" $y$ values in the dataset. A typical choice for regression is the *squared loss*:
+
+$$
+\mathcal{L}(g, a) = (g - a)^2\;\;,
+$$
+
+where $g = h(x)$ is the model's prediction, and $a$ (or $y$) is the actual value.
+
+With squared loss, the average loss becomes the *mean squared error (MSE)*:
+
+$$
+\text{MSE} = \frac{1}{n} \sum_{i=1}^n \left(h(x^{(i)}) - y^{(i)}\right)^2\;\;.
+$$
+
+The squared loss penalizes over-predictions and under-predictions equally, and it is particularly well-suited for data generated by an underlying linear hypothesis with Gaussian-distributed noise. Our objective in linear regression is to find a hyperplane that minimizes the MSE.
+
+Using this framework, the objective function becomes:
+
+$$
+J(\theta, \theta_0) = \frac{1}{n}\sum_{i=1}^n\left(\theta^T x^{(i)} + \theta_0 - y^{(i)}\right)^2\;\;.
+$$
+
+We aim to find the optimal parameters:
+
+$$
+\theta^*, \theta_0^* = \mathrm{argmin}_{\theta, \theta_0} J(\theta, \theta_0)\;\;.
+$$
+
+For one-dimensional data ($d = 1$), this corresponds to fitting a line to data. For $d > 1$, this hypothesis represents a $d$-dimensional hyperplane embedded in a $(d + 1)$-dimensional space (the input dimension plus the $y$ dimension).
+
+### Visual Example
+
+For example, in the left plot below, we see data points with labels $y$ and input dimensions $x_1$ and $x_2$. In the right plot, these points are fitted with a two-dimensional plane residing in three dimensions. This plane represents a function that predicts $y$ for any input $(x_1, x_2)$.
+
+![A two-dimensional plane fitted to data in three dimensions](figures/regression_ex1_plane1.png)
+
+
+To ensure correctness, here’s the full analytical solution for Ordinary Least Squares (OLS):
+
+### Analytical Solution: Ordinary Least Squares (continued)
+
+The matrix-based solution for OLS is as follows:
+
+$$
+\theta = \left(X^T X\right)^{-1} X^T Y
+$$
+
+where:
+
+- $X$: Design matrix (each row is a data point $x^{(i)}$ augmented with a 1 for $\theta_0$)
+- $Y$: Vector of corresponding outputs $y^{(i)}$
+- $\theta$: Vector of parameters for the regression model
+
+This solution minimizes the MSE, providing a straightforward way to compute the optimal regression parameters.
+
+---
+
+## Regularization in Linear Regression
+
+Regularization is essential when dealing with overfitting or unstable solutions due to collinearity in the data. In the context of linear regression, a common regularization technique is *Ridge Regression*. 
+
+The Ridge Regression objective adds a penalty term to the OLS objective:
+
+$$
+J_\text{ridge}(\theta) = \frac{1}{n} \sum_{i=1}^n \left( \theta^T x^{(i)} - y^{(i)} \right)^2 + \lambda \| \theta \|^2
+$$
+
+Here:
+- $\lambda$ is a non-negative regularization parameter controlling the trade-off between fitting the training data and the complexity of the model.
+- $\| \theta \|^2$ is the squared $l_2$-norm of the parameter vector.
+
+The closed-form solution for Ridge Regression is:
+
+$$
+\theta_\text{ridge} = \left( X^T X + \lambda I \right)^{-1} X^T Y
+$$
+
+where $I$ is the identity matrix. This approach ensures that the matrix inversion is stable, even when $X^T X$ is nearly singular.
+
+---
+
+## Cross-Validation for Hyperparameter Tuning
+
+When training a machine learning model, we often need to choose hyperparameters (e.g., $\lambda$ in Ridge Regression). A common technique for evaluating different hyperparameter settings is *cross-validation*. 
+
+The process involves:
+
+1. Splitting the dataset into $k$-folds.
+2. Using $k-1$ folds for training and the remaining fold for validation.
+3. Repeating this process $k$ times, each time using a different fold for validation.
+4. Averaging the validation errors to determine the best hyperparameter setting.
+
+### Example Pseudocode for Cross-Validation
+
+```python
+def cross_validate(data, k):
+    folds = split_into_k_folds(data, k)
+    errors = []
+    for i in range(k):
+        train_data = combine_all_but_one_fold(folds, i)
+        val_data = folds[i]
+        model = train_model(train_data)
+        errors.append(evaluate_model(model, val_data))
+    return sum(errors) / k
+```
