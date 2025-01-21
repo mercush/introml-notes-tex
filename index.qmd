@@ -107,19 +107,12 @@ Given samples $x^{(1)}, \ldots, x^{(n)} \in \mathbb{R}^d$, the goal is to find a
 
 
 #### Density estimation
-Given samples $\ex{x}{1}, \ldots, \ex{x}{n} \in \R^d$ drawn i.i.d.
-from some distribution $\Pr(X)$\note{The capital $X$ is a typical practice to emphasize this is a so-called random variable. Small letters are often used in probability too; those are typically reserved to denote the realized values of random variables. It might help to concretely think of coin-tosses; there, the toss outcome is a random variable and it may be realized as a "head". This paragraph actually talks about both a random variable and a realization of it, can you spot that from the notation and do you feel the difference? }, the goal is to predict the probability
-$\Pr(\ex{x}{n+1})$ of an element drawn from the same distribution.
-Density estimation sometimes plays a role as a ``subroutine'' in the
-overall learning method for supervised learning, as well.
+
+Given samples $x^{(1)}, \ldots, x^{(n)} \in \mathbb{R}^d$ drawn i.i.d. from some distribution $\operatorname{Pr}(X)$, the goal is to predict the probability $\operatorname{Pr}\left(x^{(n+1)}\right)$ of an element drawn from the same distribution. Density estimation sometimes plays a role as a "subroutine" in the overall learning method for supervised learning, as well.
 
 #### Dimensionality reduction
 
-Given samples $\ex{x}{1}, \ldots, \ex{x}{n} \in \R^D$, the problem is to
-re-represent them as points in a $d$-dimensional space, where $d <
-  D$.  The goal is typically to retain information in the data set that
-will, e.g., allow elements of one class to be distinguished from
-another.
+Given samples $x^{(1)}, \ldots, x^{(n)} \in \mathbb{R}^D$, the problem is to re-represent them as points in a $d$ dimensional space, where $\mathrm{d}<\mathrm{D}$. The goal is typically to retain information in the data set that will, e.g., allow elements of one class to be distinguished from another.
 
 Dimensionality reduction is a standard technique that is particularly useful for
 visualizing or understanding high-dimensional data.  If the goal is
