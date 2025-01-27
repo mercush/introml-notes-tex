@@ -11,14 +11,14 @@ This leads to the *ordinary least squares* objective
 
 $$
   J(\theta) = \frac{1}{n}\sum_{i =
-    1}^n\left(\theta^Tx^{(i)} - \ex{y}{i}\right)^2 \;\;.
+    1}^n\left(\theta^Tx^{(i)} - y_i\right)^2 \;\;.
 $$
 
 We use the gradient of the objective with respect to the parameters,
 
 $$
-  \nabla_{\theta}J = \frac{2}{n}\underbrace{\Xt^T}_{d \times
-    n}\underbrace{(\Xt\theta - \Yt)}_{n \times 1}\;\;,
+  \nabla_{\theta}J = \frac{2}{n}\underbrace{\tilde{X}^T}_{d \times
+    n}\underbrace{(\tilde{X}\theta - \tilde{Y})}_{n \times 1}\;\;,
   \label{eq:reg_gd_deriv}
 $$
 
@@ -26,7 +26,7 @@ to obtain an analytical solution to the linear regression problem.  Gradient
 descent could also be applied to numerically compute a solution, using the update rule
 
 $$
-  \ex{\theta}{t} = \ex{\theta}{t-1} - \eta \frac{2}{n} \sum_{i=1}^{n} \left( \left[ \ex{\theta}{t-1}\right]^T x^{(i)} - y^{(i)} \right) x^{(i)}
+  \theta^{(t)} = \theta^{(t-1)} - \eta \frac{2}{n} \sum_{i=1}^{n} \left( \left[ \theta^{(t-1)}\right]^T x^{(i)} - y^{(i)} \right) x^{(i)}
   \,.
 $$
 
@@ -58,13 +58,13 @@ Some passing familiarity with matrix
 
 \begin{align*}
   \nabla_\theta J_\text{ridge}(\theta, \theta_0)                      & =  \frac{2}{n}\sum_{i=1}^n
-  \left(\theta^T\ex{x}{i} + \theta_0 -
-  \ex{y}{i}\right) \ex{x}{i}
+  \left(\theta^T x^{(i)} + \theta_0 -
+  y^{(i)}\right)  x^{(i)}
   + 2\lambda\theta                                                                                 \\
   \frac{\partial J_\text{ridge}(\theta, \theta_0)}{\partial \theta_0} & =
   \frac{2}{n}\sum_{i=1}^n
-  \left(\theta^T\ex{x}{i} + \theta_0 -
-  \ex{y}{i} \right) \;\;.
+  \left(\theta^T x^{(i)} + \theta_0 -
+  y^{(i)} \right) \;\;.
 \end{align*}
 
 Note that $\nabla_\theta J_\text{ridge}$ will be of shape $d \times 1$ and
@@ -72,17 +72,11 @@ $\partial J_\text{ridge}/\partial \theta_0$ will be a scalar since
 we have separated $\theta_0$ from $\theta$ here. 
 
 :::{.column-margin}
-Convince yourself that the dimensions of all these
-  quantities are correct, under the assumption that $\theta$ is $d
-    \times 1$. How does $d$ relate to $m$ as discussed for $\Theta$ in the
-  previous section?
+Convince yourself that the dimensions of all these quantities are correct, under the assumption that $\theta$ is $d \times 1$. How does $d$ relate to $m$ as discussed for $\Theta$ in the previous section?
 :::
 
 :::{.column-margin}
-Compute $\nabla_\theta \norm{\theta}^2$ by finding the
-  vector of partial derivatives $(\partial \norm{\theta}^2 / \partial
-    \theta_1, \ldots, \partial \norm{\theta}^2 / \partial
-    \theta_d)$. What is the shape of $\nabla_\theta \norm{\theta}^2$?
+Compute $\nabla_\theta ||\theta||^2$ by finding the vector of partial derivatives $(\partial ||\theta||^2 / \partial \theta_1, \ldots, \partial ||\theta||^2 / \partial \theta_d)$. What is the shape of $\nabla_\theta ||\theta||^2$?
 :::
 
 :::{.column-margin}
@@ -101,6 +95,7 @@ Use these last two results to verify our derivation above.
 
 Putting everything together, our gradient descent algorithm for ridge
 regression becomes
+
 \begin{codebox}
   \Procname{$\proc{RR-Gradient-Descent}(\theta_{\it init}, \theta_{0
         {\it init}},\eta,\epsilon)$}
@@ -110,13 +105,13 @@ regression becomes
   \li \Repeat
   \li   $t \gets t+1$
   \li   $\theta^{(t)} = \theta^{(t-1)} - \eta\left(\frac{1}{n}\sum_{i=1}^n
-    \left({\ex{\theta}{t-1}}^T \ex{x}{i} + \ex{\theta_0}{t-1} -
-      \ex{y}{i}\right) \ex{x}{i}
+    \left({\ex{\theta}{t-1}}^T  x^{(i)} + \ex{\theta_0}{t-1} -
+      y^{(i)}\right)  x^{(i)}
     + \lambda\ex{\theta}{t-1}
     \right)$
   \li   $\theta_0^{(t)} = \theta_0^{(t-1)} - \eta\left(\frac{1}{n}\sum_{i=1}^n
-    \left({\ex{\theta}{t-1}}^T \ex{x}{i} + \ex{\theta_0}{t-1} -
-      \ex{y}{i} \right)
+    \left({\ex{\theta}{t-1}}^T  x^{(i)} + \ex{\theta_0}{t-1} -
+      y^{(i)} \right)
     \right)$
   \li \Until $\left| J_{\text{ridge}}(\theta^{(t)},\theta_0^{(t)}) - J_{\text{ridge}}(\theta^{(t-1)},
     \theta_0^{(t-1)}) \right| <\epsilon$
@@ -126,7 +121,6 @@ regression becomes
 \question{Is it okay that the 2's from the gradient definitions don't
   appear in the algorithm?}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ## Stochastic gradient descent
 
 When the form of the gradient is a sum, rather than take one big(ish)
@@ -134,8 +128,8 @@ step in the direction of the gradient, we can, instead,
 randomly
 
 :::{.column-margin}
-The word ``stochastic'' means probabilistic, or random;
-  so does ``aleatoric,'' which is a very cool word.  Look up
+The word "stochastic" means probabilistic, or random;
+  so does "aleatoric," which is a very cool word.  Look up
   aleatoric music, sometime.
 :::
 
@@ -195,8 +189,8 @@ learning rate sequence that works.
 
 :::{.column-margin}
 We have left out some gnarly conditions in this theorem. Also, you
-    can learn more about the subtle difference between ``with probability
-    one'' and ``always'' by taking an advanced probability course.}
+    can learn more about the subtle difference between "with probability
+    one" and "always" by taking an advanced probability course.
   to the optimal $\Theta$.\index{stochastic gradient descent!convergence}
 :::
 
