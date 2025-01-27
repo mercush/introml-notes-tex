@@ -1,1 +1,233 @@
-# gradient_descent
+# Gradient Descent
+
+## Application to Regression
+
+Recall from the previous chapter that choosing a loss function is the
+first step in formulating a machine-learning problem as an
+optimization problem, and for regression we studied the mean square
+loss, which captures loss as
+$({\rm guess} - {\rm actual})^2$.
+This leads to the *ordinary least squares* objective
+
+$$
+  J(\theta) = \frac{1}{n}\sum_{i =
+    1}^n\left(\theta^Tx^{(i)} - \ex{y}{i}\right)^2 \;\;.
+$$
+
+We use the gradient of the objective with respect to the parameters,
+
+$$
+  \nabla_{\theta}J = \frac{2}{n}\underbrace{\Xt^T}_{d \times
+    n}\underbrace{(\Xt\theta - \Yt)}_{n \times 1}\;\;,
+  \label{eq:reg_gd_deriv}
+$$
+
+to obtain an analytical solution to the linear regression problem.  Gradient
+descent could also be applied to numerically compute a solution, using the update rule
+
+$$
+  \ex{\theta}{t} = \ex{\theta}{t-1} - \eta \frac{2}{n} \sum_{i=1}^{n} \left( \left[ \ex{\theta}{t-1}\right]^T x^{(i)} - y^{(i)} \right) x^{(i)}
+  \,.
+$$
+
+:::{.column-margin}
+Beware double superscripts!  $\left[ \theta \right]^T$ is the transpose of the vector $\theta$.
+:::
+
+## Ridge Regression
+
+Now, let's add in the regularization term, to get the ridge-regression
+objective:
+
+$$ J_{\text{ridge}}(\theta, \theta_0) = \frac{1}{n}\sum_{i = 1}^n\left(\theta^Tx^{(i)} + \theta_0 - y^{(i)}\right)^2 + \lambda\|\theta\|^2 \;\;.$$
+
+Recall that in ordinary least squares, we finessed handling $\theta_0$
+by adding an extra dimension of all 1's.  In ridge regression,
+we really do need to separate the parameter vector $\theta$ from the
+offset $\theta_0$, and so, from the perspective of our general-purpose
+gradient descent method, our whole parameter set $\Theta$ is defined
+to be $\Theta = (\theta, \theta_0)$.  We will go ahead and find the
+gradients separately for each one:%
+
+:::{.column-margin}
+Some passing familiarity with matrix
+  derivatives is helpful here.  A foolproof way of computing them is to compute
+  partial derivative of $J$ with respect to each component $\theta_i$
+  of $\theta$.  See Appendix~\ref{app:matrix_deriv} on matrix derivatives!::
+:::
+
+\begin{align*}
+  \nabla_\theta J_\text{ridge}(\theta, \theta_0)                      & =  \frac{2}{n}\sum_{i=1}^n
+  \left(\theta^T\ex{x}{i} + \theta_0 -
+  \ex{y}{i}\right) \ex{x}{i}
+  + 2\lambda\theta                                                                                 \\
+  \frac{\partial J_\text{ridge}(\theta, \theta_0)}{\partial \theta_0} & =
+  \frac{2}{n}\sum_{i=1}^n
+  \left(\theta^T\ex{x}{i} + \theta_0 -
+  \ex{y}{i} \right) \;\;.
+\end{align*}
+
+Note that $\nabla_\theta J_\text{ridge}$ will be of shape $d \times 1$ and
+$\partial J_\text{ridge}/\partial \theta_0$ will be a scalar since
+we have separated $\theta_0$ from $\theta$ here. 
+
+:::{.column-margin}
+Convince yourself that the dimensions of all these
+  quantities are correct, under the assumption that $\theta$ is $d
+    \times 1$. How does $d$ relate to $m$ as discussed for $\Theta$ in the
+  previous section?
+:::
+
+:::{.column-margin}
+Compute $\nabla_\theta \norm{\theta}^2$ by finding the
+  vector of partial derivatives $(\partial \norm{\theta}^2 / \partial
+    \theta_1, \ldots, \partial \norm{\theta}^2 / \partial
+    \theta_d)$. What is the shape of $\nabla_\theta \norm{\theta}^2$?
+:::
+
+:::{.column-margin}
+Compute $\nabla_\theta J_\text{ridge}(
+    \theta^T x + \theta_0, y)$ by finding the
+  vector of partial derivatives $(\partial J_\text{ridge}(
+    \theta^T x + \theta_0, y)/ \partial \theta_1, \ldots,
+    \partial J_\text{ridge}(
+    \theta^T x + \theta_0, y) / \partial
+    \theta_d)$.
+:::
+
+:::{.column-margin}
+Use these last two results to verify our derivation above.
+:::
+
+Putting everything together, our gradient descent algorithm for ridge
+regression becomes
+\begin{codebox}
+  \Procname{$\proc{RR-Gradient-Descent}(\theta_{\it init}, \theta_{0
+        {\it init}},\eta,\epsilon)$}
+  \li $\theta^{(0)} \gets \theta_{\it init}$
+  \li $\theta_0^{(0)} \gets \theta_{0 {\it init}}$
+  \li $t \gets 0$
+  \li \Repeat
+  \li   $t \gets t+1$
+  \li   $\theta^{(t)} = \theta^{(t-1)} - \eta\left(\frac{1}{n}\sum_{i=1}^n
+    \left({\ex{\theta}{t-1}}^T \ex{x}{i} + \ex{\theta_0}{t-1} -
+      \ex{y}{i}\right) \ex{x}{i}
+    + \lambda\ex{\theta}{t-1}
+    \right)$
+  \li   $\theta_0^{(t)} = \theta_0^{(t-1)} - \eta\left(\frac{1}{n}\sum_{i=1}^n
+    \left({\ex{\theta}{t-1}}^T \ex{x}{i} + \ex{\theta_0}{t-1} -
+      \ex{y}{i} \right)
+    \right)$
+  \li \Until $\left| J_{\text{ridge}}(\theta^{(t)},\theta_0^{(t)}) - J_{\text{ridge}}(\theta^{(t-1)},
+    \theta_0^{(t-1)}) \right| <\epsilon$
+  \li \Return $\theta^{(t)},\theta_0^{(t)}$
+\end{codebox}
+\question{Is it okay that $\lambda$ doesn't appear in line 7?}
+\question{Is it okay that the 2's from the gradient definitions don't
+  appear in the algorithm?}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+## Stochastic gradient descent
+
+When the form of the gradient is a sum, rather than take one big(ish)
+step in the direction of the gradient, we can, instead,
+randomly
+
+:::{.column-margin}
+The word ``stochastic'' means probabilistic, or random;
+  so does ``aleatoric,'' which is a very cool word.  Look up
+  aleatoric music, sometime.
+:::
+
+select one term of the sum, and take a very small step in that
+direction.  This seems sort of crazy,  but remember that all the
+little steps would average out to the same direction as the big step
+if you were to stay in one place.   Of course, you're not staying in
+that place,  so you move, in expectation, in the direction of the
+gradient.
+
+Most objective functions in machine learning can end up being written
+as a sum over data points, in which case, stochastic gradient descent
+(SGD) is implemented by picking a data point randomly out of the
+data set, computing the gradient as if there were only that one point
+in the data set, and taking a small step  in the negative direction.
+
+Let's assume our objective has the form
+$$
+  f(\Theta) = \sum_{i = 1}^n f_i(\Theta)
+  \;\;,
+$$
+
+where $n$ is the number of data points used in the objective (and this
+may be different from the number of points available in the whole data
+set).  Here is pseudocode for applying SGD to such an objective $f$;
+it assumes we know the form of $\nabla_\Theta f_i$ for all $i$ in
+$1\ldots n$:
+
+\begin{codebox}
+  \Procname{$\proc{Stochastic-Gradient-Descent}(\Theta_{\it init}, \eta, f,
+      \nabla_\Theta f_1, \ldots, \nabla_\Theta f_n, T)$}
+  \li $\Theta^{(0)} \gets \Theta_{\it init}$
+  \li \For $t \gets 1$ \To $T$
+  \li \Do
+  randomly select $i \in \{1, 2, \dots, n\}$
+  \li   $\Theta^{(t)} = \Theta^{(t-1)} - \eta(t) \, \nabla_\Theta f_i(\Theta^{(t-1)})$
+  \End
+  \li \Return $\Theta^{(t)}$
+\end{codebox}
+
+Note that now instead of a fixed  value of $\eta$, $\eta$ is indexed by
+the iteration of the algorithm, $t$.\index{stochastic gradient descent}
+Choosing a good stopping criterion can be a little trickier for SGD than
+traditional gradient descent. Here we've just chosen
+to stop after a fixed number of iterations $T$.
+
+For SGD to converge to a local optimum point as $t$ increases, the
+learning rate has to decrease as a function of time. The next result shows one
+learning rate sequence that works.
+
+\begin{theorem}
+  If $f$ is convex, and $\eta(t)$ is a sequence satisfying
+  $$ \sum_{t = 1}^{\infty}\eta(t) = \infty \;\;\text{and}\;\;
+    \sum_{t = 1}^{\infty}\eta(t)^2 < \infty \;\;,$$
+  then SGD converges *with probability one*. 
+\end{theorem}
+
+:::{.column-margin}
+We have left out some gnarly conditions in this theorem. Also, you
+    can learn more about the subtle difference between ``with probability
+    one'' and ``always'' by taking an advanced probability course.}
+  to the optimal $\Theta$.\index{stochastic gradient descent!convergence}
+:::
+
+Why these two conditions?  The intuition is that the first condition,
+on $\sum \eta(t)$, is needed to allow for the possibility of an
+unbounded potential range of exploration, while the second condition,
+on $\sum\eta(t)^2$, ensures that the learning rates get smaller and
+smaller as $t$ increases.
+
+One ``legal'' way of setting the learning rate is to make $\eta(t) = 1/t$ but
+people often use rules that decrease more slowly, and so don't
+strictly satisfy the criteria for convergence.
+
+:::{.column-margin}
+  If you start a long way from the optimum, would making $\eta(t)$
+  decrease more slowly tend to make you move more quickly or more slowly
+  to the optimum?
+:::
+
+There are multiple intuitions for why SGD might be a better choice
+algorithmically than regular GD (which is sometimes called *batch* GD (BGD)):
+
+1. BGD typically requires computing some quantity over every
+        data point in a data set. SGD may perform well after visiting only
+        some of the data. This behavior can be useful for very large data sets --
+        in runtime and memory savings.
+2. If your $f$ is actually non-convex, but has many shallow local
+        optimum points that might trap BGD, then taking {\em samples} from the
+        gradient at some point $\Theta$ might ``bounce'' you around the
+        landscape and away from the local optimum points.
+3. Sometimes, optimizing $f$ really well is not what we want to do,
+        because it might overfit the training set;  so, in fact, although
+          SGD might not get lower training error than BGD, it
+        might result in lower test error.
