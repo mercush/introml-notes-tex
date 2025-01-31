@@ -1,6 +1,6 @@
 # Introduction {#chap-intro}
 
-The main focus of *machine learning* (ML) is *making decisions or predictions based on data*. There are a number of other fields with significant overlap in technique, but differences in focus.
+The main focus of *machine learning* (ML)^[Machine Learning] is *making decisions or predictions based on data*. There are a number of other fields with significant overlap in technique, but differences in focus.
 
 :::{.column-margin}
 This description is paraphrased from a post on 9/4/12 at [andrewgelman.com](https://andrewgelman.com).
@@ -16,6 +16,7 @@ One crucial aspect of machine learning approaches to solving problems is that hu
 This aspect is often undervalued.
 :::
 
+### The Conceptual Basis of Learning from Data
 
 The conceptual basis of learning from data is the *problem of induction*: Why do we think previously seen data will help us predict the future? This is a longstanding philosophical problem. We operationalize it by making assumptions, such as:
 
@@ -40,6 +41,7 @@ For example, the same treatment may end up with different results on different t
 
 
 
+### Problem Classes in Machine Learning
 
 We can describe problems and their solutions using six characteristics, three of which characterize the problem and three of which characterize the solution:
 
@@ -50,19 +52,16 @@ We can describe problems and their solutions using six characteristics, three of
 5. **Model class:** What particular class of models will be used? What criterion will we use to pick a particular model from the model class?
 6. **Algorithm:** What computational process will be used to fit the model to the data and/or to make predictions?
 
+
 Without making some assumptions about the nature of the process generating the data, we
 cannot perform generalization. In the following sections, we elaborate on these ideas. 
+
+
 :::{.column-margin}
 Don't feel you have to memorize all these kinds of learning, etc. We just want you to have a very high-level view of (part of) the breadth of the field.
 :::
 
-## Problem Class
 
-There are many different *problem classes* in machine learning. They vary according to what
-kind of data is provided and what kind of conclusions are to be drawn from it. Five stan-
-dard problem classes are described below, to establish some notation and terminology.
-
-In this course, we will focus on classification and regression (two examples of supervised learning), and we will touch on reinforcement learning, sequence learning, and clustering.
 
 ### Supervised Learning
 
@@ -104,24 +103,6 @@ The classification problem is **binary** or **two-class** if $y^{(i)}$ (also kno
 #### Clustering
 
 Given samples $x^{(1)}, \ldots, x^{(n)} \in \mathbb{R}^d$, the goal is to find a partitioning (or *clustering*) of the samples that groups together similar samples.
-
-
-#### Density estimation
-
-Given samples $x^{(1)}, \ldots, x^{(n)} \in \mathbb{R}^d$ drawn i.i.d. from some distribution $\operatorname{Pr}(X)$, the goal is to predict the probability $\operatorname{Pr}\left(x^{(n+1)}\right)$ of an element drawn from the same distribution. Density estimation sometimes plays a role as a "subroutine" in the overall learning method for supervised learning, as well.
-
-#### Dimensionality reduction
-
-Given samples $x^{(1)}, \ldots, x^{(n)} \in \mathbb{R}^D$, the problem is to re-represent them as points in a $d$ dimensional space, where $\mathrm{d}<\mathrm{D}$. The goal is typically to retain information in the data set that will, e.g., allow elements of one class to be distinguished from another.
-
-Dimensionality reduction is a standard technique that is particularly useful for
-visualizing or understanding high-dimensional data.  If the goal is
-ultimately to perform regression or classification on the data after
-the dimensionality is reduced, it is usually best to articulate an objective
-for the overall prediction problem rather than to first do
-dimensionality reduction without knowing which dimensions will be
-important for the prediction task.
-
 
 #### Dimensionality Reduction
 
