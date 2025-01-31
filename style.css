@@ -1,0 +1,15 @@
+.study-question-callout {
+    border-left: 4px solid #007BFF; /* Change color as needed */
+    padding: 10px;
+    background-color: #f9f9f9;
+    margin-bottom: 20px;
+}
+.study-question-callout::before {
+    content: "❓ Study Question"; /* Title text */
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+.study-question-callout .icon {
+    color: #007BFF; /* Change icon color */
+}

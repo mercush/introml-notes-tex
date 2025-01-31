@@ -42,8 +42,8 @@ book:
 
 format:
   html:
-    citation-style: elsevier-with-titles.csl
-    # css: colors.css
+    # citation-style: elsevier-with-titles.csl
+    css: style.css
     anchor-sections: true
     fontsize: "16px"
     linestretch: 1.6
